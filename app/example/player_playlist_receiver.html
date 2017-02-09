@@ -1,0 +1,139 @@
+<!--
+Copyright (C) 2014 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!--
+This shows a very simple receiver app to show how you could support video playlists.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Cast Chrome Receiver SDK: Video Playlist</title>
+    <!--
+        Cast APIs
+    -->
+    <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
+    <style>
+        body {
+            overflow:hidden;
+        }
+        video {
+            height:100%;
+            width:100%;
+            background-color: #000000;
+            position:absolute;
+        }
+    </style>
+</head>
+<body>
+    <video id="vid"></video>
+
+    <script type="text/javascript">
+        "use strict";
+
+        window.onload = function() {
+	        // Keep track of a playlist of videos
+            var playlist = null;
+            var currentVideoIndex = -1;
+
+            var mediaElement = document.getElementById('vid');
+            cast.receiver.logger.setLevelValue(cast.receiver.LoggerLevel.DEBUG);
+            var castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
+            // Create a custom namespace channel to receive commands from the sender
+            // app to add items to a playlist
+            var playlistMessageBus = castReceiverManager.getCastMessageBus(
+                'urn:x-cast:com.google.cast.sample.playlist',
+                cast.receiver.CastMessageBus.MessageType.JSON);
+            // Create a message handler for the custome namespace channel
+            playlistMessageBus.onMessage = function(event) {
+                console.log('Playlist message: ' + JSON.stringify(event));
+                // Handle the ADD command from the sender
+                // Other commands could also be supported
+                if (event.data.type == 'ADD') {
+                    playlist.push(event.data.playlistItem);
+                }
+            };
+
+            var mediaManager = new cast.receiver.MediaManager(mediaElement);
+
+             mediaElement.addEventListener('loadedmetadata', function() {
+                if (currentVideoIndex >= 0) {
+                    // When metadataloaded completes, we can send the new media
+                    // information to the senders. We use metadataloaded so we
+                    // can send the new duration.
+                    mediaManager.broadcastStatus(true);
+                }
+            });
+
+            // Plays the next video in the list
+            var playNextVideo = function() {
+                if (playlist && currentVideoIndex < playlist.length - 1) {
+                    currentVideoIndex++;
+                    mediaElement.src = playlist[currentVideoIndex].contentId;
+                    mediaElement.autoplay = true;
+                    mediaElement.load();
+                    var mediaInformation = mediaManager.getMediaInformation();
+                    mediaInformation.contentId = playlist[currentVideoIndex].contentId;
+                    mediaInformation.metadata.title = playlist[currentVideoIndex].title;
+                    mediaInformation.metadata.images[0] = {
+                        url: playlist[currentVideoIndex].image
+                    };
+                    // We use false as we do not want to broadcast the new status yet
+                    // we will broadcast manually when the media has been loaded, this
+                    // is to be sure the duration has been updated in the media element
+                    mediaManager.setMediaInformation(mediaInformation, false);
+                    return true;
+                }
+                return false;
+            };
+
+            // Override MediaManager onEnded
+            var onEndedOrig = mediaManager.onEnded.bind(mediaManager);
+            mediaManager.onEnded = function() {
+                if (!playNextVideo()) {
+                    // No more playlist items, simply terminate the media session
+                    // by calling the default onEnded function
+                    onEndedOrig();
+                }
+            };
+
+            // Override MediaManager onError
+            var onErrorOrig = mediaManager.onError.bind(mediaManager);
+            mediaManager.onError = function() {
+                if (!playNextVideo()) {
+                    // No more playlist items, simply terminate the media session
+                    // by calling the default onError function
+                    onErrorOrig();
+                }
+            };
+
+            // Override MediaManager onLoad
+            var onLoadOrig = mediaManager.onLoad.bind(mediaManager);
+            mediaManager.onLoad = function(event) {
+                // Here we fully override the standard load event
+                console.log('onLoad ' + JSON.stringify(event));
+                // Initialize the playlist with the custom data
+                // playlist items
+                playlist = event.data.customData.playlist;
+                currentVideoIndex = -1;
+                // Call the original load handler
+                onLoadOrig(event);
+            };
+
+            console.log('Starting receiver...');
+            castReceiverManager.start();
+        };
+    </script>
+</body>
+</html>

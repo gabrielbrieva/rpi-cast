@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Home Cast Custom Receiver</title>
+  <!-- Cast APIs -->
+  <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
+  <style>
+    body {
+      overflow:hidden;
+    }
+    #main-video {
+      height:100%;
+      width:100%;
+      background-color: #AAA;
+      position:absolute;
+    }
+
+    #main-video {
+      display: none;
+      width:100%;
+      position:absolute;
+    }
+  </style>
+</head>
+<body>
+  <video id="main-video"></video>
+  <img id="main-image">
+
+  <script type="text/javascript">
+    "use strict";
+
+    window.onload = function() {
+      var mediaElement = document.getElementById('media');
+      var mediaManager = new cast.receiver.MediaManager(window.mediaElement);
+      var castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
+
+      castReceiverManager.onSenderDisconnected = function(event) {
+        if(castReceiverManager.getSenders().length == 0 && event.reason == cast.receiver.system.DisconnectReason.REQUESTED_BY_SENDER) {
+          // cerrar aplicacion si no quedan senders conectados
+          window.close();
+        }
+      }
+
+      var messageBus = castReceiverManager.getCastMessageBus('urn:x-cast:cl.tuxan.homecast', cast.receiver.CastMessageBus.MessageType.JSON);
+
+      messageBus.onMessage = function(event) {
+        // Handle message
+        // watch event.data
+      }
+
+      var appConfig = new cast.receiver.CastReceiverManager.Config();
+      appConfig.maxInactivity = 6000;
+
+      var castReceiverManager.start(appConfig);
+    };
+  </script>
+</body>
+</html>

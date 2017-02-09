@@ -1,0 +1,15 @@
+{
+    "name": "rpi-cast-app",
+    "description": "RPI Cast App",
+    "main": [
+        "app/sender.html"
+    ],
+    "authors": [
+        "tuxan"
+    ],
+    "license": "MIT",
+    "dependencies": {
+        "angularjs":"1.x",
+        "angular-animate":"1.x"
+    }
+}

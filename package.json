@@ -1,0 +1,20 @@
+{
+  "name": "rpi-cast",
+  "version": "0.1.0",
+  "description": "RPI Cast Server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: No test specified\" && exit 1"
+  },
+  "author": "tuxan",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.10.0",
+    "express": "^4.10.6",
+    "iconv": "^2.1.1",
+    "mime": "^1.2.11",
+    "node-icu-charset-detector": "^0.2.0",
+    "fluent-ffmpeg": "2.0.1",
+    "glob": "7.0.3"
+  }
+}

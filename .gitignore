@@ -1,0 +1,11 @@
+# netbeans project files
+nbproject/private/
+
+# web application components
+/app/bower_components
+
+# server components
+/node_modules
+
+# ssl files
+/ssl/*

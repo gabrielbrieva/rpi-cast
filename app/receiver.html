@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Home Cast Custom Receiver</title>
+  <!-- Cast APIs -->
+  <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
+  <style>
+	html {
+		background: linear-gradient(to bottom, #000000 0%,#23394f 71%,#435563 100%);
+		width:100%; 
+		height:100%;
+	}
+	  
+    body {
+		font-family: Verdana,sans-serif;
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		right: 0px;
+		bottom: 0px;
+		padding: 0px;
+		margin: 0px;
+		overflow:hidden;
+    }
+    
+    .app-state {
+		position: absolute;
+		text-align: center;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		z-index: -1;
+	}
+	
+	.app-state .name {
+		color: white;
+		font-weight: bold;
+		padding: 0.5em;
+		font-size: 1.5em;
+	}
+    
+    .app-state .logo {
+		width: 20vh;
+	}
+	
+	.app-state .state {
+		color: gray;
+		font-size: 1.2em;
+	}
+
+    #video {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+    }
+
+  </style>
+</head>
+<body>
+	
+	<div class="app-state">
+		<img class="logo" src="images/rpi_cast.png" />
+		<div class="name">RPI Cast</div>
+		<div class="state">Loading...</div>
+	</div>
+	
+    <video id="video"></video>
+	<img id="image">
+
+	<script type="text/javascript">
+	"use strict";
+
+	window.onload = function() {
+	  var mediaElement = document.getElementById('video');
+	  var mediaManager = new cast.receiver.MediaManager(mediaElement);
+	  var castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
+
+	  castReceiverManager.onSenderDisconnected = function(event) {
+		if(castReceiverManager.getSenders().length == 0 && event.reason == cast.receiver.system.DisconnectReason.REQUESTED_BY_SENDER) {
+		  // cerrar aplicacion si no quedan senders conectados
+		  console.log("No sender connected, will close de cast receiver application");
+		  window.close();
+		}
+	  }
+
+	  var messageBus = castReceiverManager.getCastMessageBus('urn:x-cast:cl.tuxan.homecast', cast.receiver.CastMessageBus.MessageType.JSON);
+
+	  messageBus.onMessage = function(event) {
+		// Handle message
+		// watch event.data
+
+		console.log("incoming message");
+		console.log(JSON.stringify(event));
+
+	  }
+
+	  var appConfig = new cast.receiver.CastReceiverManager.Config();
+	  appConfig.maxInactivity = 6000;
+
+	  castReceiverManager.start(appConfig);
+	};
+	</script>
+</body>
+</html>

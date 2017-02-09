@@ -1,0 +1,87 @@
+body {
+  margin: 0px;
+    font-family: sans-serif;
+    font-size: 1em;
+}
+
+#volumen {
+  -webkit-appearance: slider-vertical;
+}
+
+.parents-links {
+  list-style: none;
+  display: block;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+}
+
+.parents-links li.type-folder {
+  padding: 5px;
+  background-color: #F3E6C0;
+  margin-left: 3px;
+  float: left;
+}
+
+.parents-links li.type-folder:hover {
+  cursor:pointer;
+  background-color: #DFD;
+}
+
+
+.files-links {
+  list-style: none;
+  display: block;
+  margin: 0;
+  padding: 2px;
+}
+
+.files-links li {
+  padding: 10px;
+  background-color: #F3E6C0;
+  margin: 2px;
+}
+
+.files-links li.type-file {
+  background-color: #FFF;
+}
+
+.files-links li:hover {
+  cursor:pointer;
+  background-color: #DFD;
+}
+
+
+
+
+
+
+
+
+.buffered { 
+    height: 20px; 
+    position: relative;
+    background: #555;
+    width: 300px;
+  }
+
+  #buffered-amount {
+    display: block;
+    height: 100%;
+    background-color: #777;
+    width: 0;
+  }
+
+  .progress { 
+    margin-top: -20px;
+    height: 20px;  
+    position: relative;
+    width: 300px;
+  }
+
+  #progress-amount {
+    display: block;
+    height: 100%;
+    background-color: #595;
+    width: 0;
+  }

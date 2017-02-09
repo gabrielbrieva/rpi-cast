@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Home Cast</title>
+
+    <link crossorigin="anonymous" href="css/cast.css" rel="stylesheet">
+
+    <script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></script>
+
+    <script type="text/javascript" src="scripts/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="scripts/mustache.min.js"></script>
+    <script type="text/javascript" src="scripts/sender.js"></script>
+
+    <script type="text/javascript">
+
+      var videoExtensions = ["MKV", "AVI", "MOV", "MP4", "OGG", "WEBM"];
+      var audioExtensions = ["MPGA", "WAV", "MP3"];
+      var imageExtensions = ["JPEG", "JPG", "GIF", "PNG"];
+
+      $(function(){
+
+        $(document).on("click", ".type-folder", function(e){
+          getFiles({
+            name: $(this).attr("p-name"),
+            type: $(this).attr("p-type"),
+            parentPath: $(this).attr("p-parent")
+          });
+        });
+
+        $(document).on("click", ".type-file", function(e){
+
+          var f = {
+            name: $(this).attr("p-name"),
+            type: $(this).attr("p-type"),
+            parentPath: $(this).attr("p-parent"),
+            extension: $(this).attr("p-extension"),
+            subtitle: $(this).attr("p-subtitle"),
+            contentType: $(this).attr("p-contentType")
+          };
+
+          if (f.extension && videoExtensions.indexOf(f.extension) !== -1) {
+            CastFile(f, getVideo);
+          } else if (f.extension && audioExtensions.indexOf(f.extension) !== -1) {
+            CastFile(f, getAudio);
+          } else if (f.extension && imageExtensions.indexOf(f.extension) !== -1) {
+            CastFile(f, getImage);
+          }
+
+        });
+
+        getFiles();
+
+      });
+
+      var homeCastSender = new HomeCastSender("671A6CC5", "urn:x-cast:cl.tuxan.homecast");
+      homeCastSender.Init();
+
+      function CastFile(f, loadLocallyCallback) {
+        if (homeCastSender.session != null)
+        {
+          mediaInfo = homeCastSender.CreateMediaInfo(f);
+          homeCastSender.LoadMedia(mediaInfo);
+        }
+        else if (loadLocallyCallback)
+        {
+          loadLocallyCallback(f);
+        }
+      }
+
+      function getVideo(f)
+      {
+        if (f)
+        {
+          var videoTmpl = $("#video-tmpl").html();
+          Mustache.parse(videoTmpl);   // optional, speeds up future uses
+          var rendered = Mustache.render(videoTmpl, f);
+          $("#media-container").html(rendered);
+        }
+
+      }
+
+      function getAudio(f)
+      {
+        if (f)
+        {
+          var audioTmpl = $("#audio-tmpl").html();
+          Mustache.parse(audioTmpl);   // optional, speeds up future uses
+          var rendered = Mustache.render(audioTmpl, f);
+          $("#media-container").html(rendered);
+        }
+      }
+
+      function getImage(f)
+      {
+        if (f)
+        {
+          var iamgeTmpl = $("#image-tmpl").html();
+          Mustache.parse(iamgeTmpl);   // optional, speeds up future uses
+          var rendered = Mustache.render(iamgeTmpl, f);
+          $("#media-container").html(rendered);
+        }
+      }
+
+      function getFiles(folder)
+      {
+        $.ajax({
+          url: "/files",
+          dataType: "json",
+          contentType: "application/json",
+          method: "POST",
+          data: folder ? JSON.stringify(folder) : null,
+          success: function(resp) {
+           if (resp) {
+             var parentsTmpl = $("#parents-tmpl").html();
+             Mustache.parse(parentsTmpl);   // optional, speeds up future uses
+             resp.current.isFolder = resp.current.type === "folder";
+             resp.current.isRoot = resp.current.name === "/";
+             var rendered = Mustache.render(parentsTmpl, resp);
+             $("#parents-container").html(rendered);
+
+             var filesTmpl = $("#files-tmpl").html();
+             Mustache.parse(filesTmpl);   // optional, speeds up future uses
+             rendered = Mustache.render(filesTmpl, resp);
+             $("#files-container").html(rendered);
+           }
+          }
+        });
+      }
+    </script>
+  </head>
+  <body>
+
+    <script id="parents-tmpl" type="x-tmpl-mustache">
+      <ul class="parents-links">
+        {{#parents}}
+          <li class="type-{{type}}" p-type="{{type}}" p-name="{{name}}" p-parent="{{parentPath}}">{{name}}</li>
+        {{/parents}}
+        {{#current.isFolder}}
+          {{^current.isRoot}}
+            <li class="type-{{current.type}}" p-type="{{current.type}}" p-name="{{current.name}}" p-parent="{{current.parentPath}}">{{current.name}}</li>
+          {{/current.isRoot}}
+        {{/current.isFolder}}
+      </ul>
+    </script>
+
+    <script id="files-tmpl" type="x-tmpl-mustache">
+      <ul class="files-links">
+        {{#files}}
+          <li class="type-{{type}}"
+            p-type="{{type}}"
+            p-name="{{name}}"
+            p-parent="{{parentPath}}"
+            p-contentType="{{contentType}}"
+            {{#extension}}p-extension="{{.}}" {{/extension}}
+            {{#subtitle}}p-subtitle="{{.}}" {{/subtitle}}
+          >{{name}}</li>
+        {{/files}}
+      </ul>
+    </script>
+
+    <script id="video-tmpl" type="x-tmpl-mustache">
+      <video id="media-video" class="video" controls autoplay preload="metadata" crossorigin="anonymous">
+        <source src="/media?filename={{name}}&parent={{parentPath}}" type='video/mp4' />
+        {{#subtitle}}
+        <track label="español" kind="subtitles" srclang="es" src="/media?filename={{subtitle}}&parent={{parentPath}}" default />
+        {{/subtitle}}
+      </video>
+    </script>
+
+    <script id="audio-tmpl" type="x-tmpl-mustache">
+      <video id="media-audio" class="audio" controls autoplay preload="metadata" crossorigin="anonymous">
+        <source src="/media?filename={{name}}&parent={{parentPath}}" type='audio/mpeg' />
+      </video>
+    </script>
+
+    <script id="image-tmpl" type="x-tmpl-mustache">
+      <img id="media-image" class="image" src="/media?filename={{name}}&parent={{parentPath}}">
+    </script>
+
+    <div id="controls">
+      <input id="progress" type="range" min="0" max="100" step="1" onmouseup="homeCastSender.seekMedia(this.value);" onmousedown="homeCastSender.clearTimer();" />
+      <input id="volumen" type="range" min="0" max="1" step="0.1" />
+      <button onclick="homeCastSender.LaunchApp()">Launch App</button>
+      <!--<button onclick="homeCastSender.LoadMedia()">Load Media</button>-->
+      <button onclick="homeCastSender.Play()">Play</button>
+      <button onclick="homeCastSender.Pause()">Pause</button>
+      <button onclick="homeCastSender.Stop()">Stop</button>
+      <!--<button onclick="homeCastSender.UnloadMedia()">Unload Media</button>-->
+      <button onclick="homeCastSender.StopApp()">Stop App</button>
+    </div>
+
+    <div id="parents-container"></div>
+    <div id="files-container"></div>
+    <div id="media-container"></div>
+  </body>
+</html>
