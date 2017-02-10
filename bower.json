@@ -2,7 +2,7 @@
     "name": "rpi-cast-app",
     "description": "RPI Cast App",
     "main": [
-        "app/sender.html"
+        "app/index.html"
     ],
     "authors": [
         "tuxan"

@@ -38,7 +38,7 @@ var m = medias(settings.rootPath);
 var app = express();
 
 // public static resources
-app.use(express.static('public'));
+app.use(express.static('app'));
 
 // cross domain configuration
 var allowCrossDomain = function(req, res, next) {
