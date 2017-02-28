@@ -10,6 +10,7 @@
     "license": "MIT",
     "dependencies": {
         "angularjs":"1.x",
-        "angular-animate":"1.x"
+        "angular-animate":"1.x",
+        "angular-material":"1.x"
     }
 }
