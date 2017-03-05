@@ -16,7 +16,7 @@ angular.module('MediaCenter')
         HomeCastSender.prototype.Init = function () {
             var that = this;
 
-            window.onload = function () {
+            //window.onload = function () {
 
                 // cuando la api de Google Cast se termina de cargar
                 // inicializamos el API de Google Cast.
@@ -35,9 +35,11 @@ angular.module('MediaCenter')
                     } else {
                         console.log(errorInfo);
                     }
-                }
+                };
 
-            };
+            //};
+            
+            return this;
         };
 
         // on init success callback
@@ -250,5 +252,17 @@ angular.module('MediaCenter')
             this.session.stop(this.GenericSuccess.bind(this), this.GenericError.bind(this));
         };
         
-        return new HomeCastSender(CastAppConfig);
+        HomeCastSender.prototype.CastFile = function (f, loadLocallyCallback) {
+            if (this.session !== null)
+            {
+                var mediaInfo = this.CreateMediaInfo(f);
+                this.LoadMedia(mediaInfo);
+            }
+            else if (loadLocallyCallback)
+            {
+                loadLocallyCallback(f);
+            }
+        };
+        
+        return  new HomeCastSender(CastAppConfig).Init();
     }]);

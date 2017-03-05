@@ -3,23 +3,7 @@ var audioExtensions = ["MPGA", "WAV", "MP3"];
 var imageExtensions = ["JPEG", "JPG", "GIF", "PNG"];
 
 angular.module('MediaCenter')
-    .controller('ExplorerController', ['$scope', '$http', 'srvHomeCastSender', function($scope, $http, srvHomeCastSender) {
-        
-        srvHomeCastSender.Init();
-
-        $scope.homeCastSender = srvHomeCastSender;
-        
-        function CastFile(f, loadLocallyCallback) {
-            if (srvHomeCastSender.session !== null)
-            {
-                mediaInfo = srvHomeCastSender.CreateMediaInfo(f);
-                srvHomeCastSender.LoadMedia(mediaInfo);
-            }
-            else if (loadLocallyCallback)
-            {
-                loadLocallyCallback(f);
-            }
-        }
+    .controller('ExplorerController', function($scope, $http, srvHomeCastSender) {
         
         $scope.getFiles = function (folder) {
             $http({
@@ -50,7 +34,7 @@ angular.module('MediaCenter')
         
         $scope.loadFile = function (file) {
             if (file.extension && videoExtensions.indexOf(file.extension) !== -1) {
-                CastFile(file, null/*getVideo*/);
+                srvHomeCastSender.CastFile(file, null/*getVideo*/);
             } else if (file.extension && audioExtensions.indexOf(file.extension) !== -1) {
                 //CastFile(file, getAudio);
             } else if (file.extension && imageExtensions.indexOf(file.extension) !== -1) {
@@ -64,4 +48,4 @@ angular.module('MediaCenter')
         
         $scope.getFiles();
         
-    }]);
+    });

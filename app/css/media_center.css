@@ -1,146 +1,81 @@
 body {
-  margin: 0px;
+    margin: 0px;
     font-family: sans-serif;
     font-size: 1em;
+    height: 100%;
+    overflow: hidden;
 }
 
-.main-container {
-    height: 100%;
+:focus {
+    outline: none;
+}
+
+.app-logo {
+    height: 75%;
+    padding-right: 16px;
+}
+
+.app-title {
+    font-weight: bold !important;
 }
 
 #volumen {
-  -webkit-appearance: slider-vertical;
+    -webkit-appearance: slider-vertical;
 }
 
 .breadcrumb {
+    display: table-row;
     list-style: none;
     overflow: hidden;
     padding: 0;
     margin: 0;
 }
 
-.breadcrumb li.triangle:before {
-    border-bottom: 17px solid transparent;
-    border-left: 20px solid white;
-    border-top: 17px solid transparent;
-    content:" ";
-    display: block;
-    height: 0;
-    left: 100%;
-    margin-left: 2px;
-    margin-top: -17px;
-    position: absolute;
-    top: 50%;
-    width: 0;
-    z-index: 1;
+.breadcrumb li {
+    color: #eee;
+    display: table-cell;
+    position: relative;
+    font-size: 0.8em;
 }
 
-.breadcrumb li.triangle:after {
-    border-bottom: 17px solid transparent;
-    border-left: 20px solid #555;
-    border-top: 17px solid transparent;
-    content:" ";
-    display: block;
-    height: 0;
-    left: 100%;
-    margin-top: -17px;
-    position: absolute;
-    top: 50%;
-    width: 0;
-    z-index: 2;
+.breadcrumb li:hover {
+    cursor: pointer;
+    text-decoration: underline;
 }
 
 .breadcrumb li:last-child {
-    padding-right: 10px;
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
-    background-color: #ccc;
-    color: #222;
-}
-
-.breadcrumb li {
-    color: #eee;
-    background: none repeat scroll 0 0 #555;
-    display: block;
-    float: left;
-    height: 20px;
-    padding: 5px 0 5px 33px;
-    position: relative;
-    cursor: pointer;
-}
-
-.parents-links {
-  list-style: none;
-  display: block;
-  margin: 0;
-  padding: 0;
-  overflow: auto;
+    font-weight: bold;
 }
 
 
 .fade.ng-enter {
-  transition: 0.25s linear all;
-  opacity: 0;
+    transition: 0.25s linear all;
+    opacity: 0;
 }
 
 .fade.ng-enter.ng-enter-active {
-  opacity: 1;
+    opacity: 1;
 }
 
 
 .files-links {
-  list-style: none;
-  display: block;
-  margin: 0;
-  padding: 2px;
+    list-style: none;
+    display: block;
+    margin: 0;
+    padding: 2px;
 }
 
 .files-links li {
-  padding: 10px;
-  background-color: #F3E6C0;
-  margin: 2px;
+    padding: 10px;
+    background-color: #F3E6C0;
+    margin: 2px;
 }
 
 .files-links li.type-file {
-  background-color: #FFF;
+    background-color: #FFF;
 }
 
 .files-links li:hover {
-  cursor:pointer;
-  background-color: #DFD;
+    cursor:pointer;
+    background-color: #DFD;
 }
-
-
-
-
-
-
-
-
-.buffered { 
-    height: 20px; 
-    position: relative;
-    background: #555;
-    width: 300px;
-  }
-
-  #buffered-amount {
-    display: block;
-    height: 100%;
-    background-color: #777;
-    width: 0;
-  }
-
-  .progress { 
-    margin-top: -20px;
-    height: 20px;  
-    position: relative;
-    width: 300px;
-  }
-
-  #progress-amount {
-    display: block;
-    height: 100%;
-    background-color: #595;
-    width: 0;
-  }

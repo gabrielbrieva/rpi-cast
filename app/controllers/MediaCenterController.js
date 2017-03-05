@@ -1,10 +1,46 @@
 angular.module('MediaCenter')
     .config(function($mdThemingProvider) {
-        $mdThemingProvider.theme('default')
-            .primaryPalette("blue-grey")
-            .accentPalette("lime");
+        $mdThemingProvider.definePalette('customprimary', {
+          '50': 'e9e9e9',
+          '100': 'c9c9c9',
+          '200': 'a5a5a5',
+          '300': '818181',
+          '400': '666666',
+          '500': '4b4b4b',
+          '600': '444444',
+          '700': '3b3b3b',
+          '800': '333333',
+          '900': '232323',
+          'A100': 'f18080',
+          'A200': 'ec5252',
+          'A400': 'ff0c0c',
+          'A700': 'f10000',
+          'contrastDefaultColor': 'light',
+          'contrastDarkColors': [
+            '50',
+            '100',
+            '200',
+            '300',
+            'A100',
+            'A200'
+          ],
+          'contrastLightColors': [
+            '400',
+            '500',
+            '600',
+            '700',
+            '800',
+            '900',
+            'A400',
+            'A700'
+          ]
+        });
+
+       $mdThemingProvider.theme('default')
+           .primaryPalette('customprimary');
+        
     })
-    .controller('MediaCenterController', function ($scope, $timeout, $mdSidenav, $log) {
+    .controller('MediaCenterController',function ($scope, $timeout, $mdSidenav, $log, srvHomeCastSender) {
         $scope.togglePlaylist = buildDelayedToggler('playlist');
         $scope.isOpenPlaylist = function () {
             return $mdSidenav('playlist').isOpen();
@@ -43,5 +79,8 @@ angular.module('MediaCenter')
                         });
             }, 200);
         }
+        
+        //srvHomeCastSender.Init();
+        $scope.homeCastSender = srvHomeCastSender;
     });
 

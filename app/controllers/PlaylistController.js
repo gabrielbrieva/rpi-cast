@@ -1,5 +1,5 @@
 angular.module('MediaCenter')
-    .controller('PlaylistController', function ($scope, $mdSidenav, $log) {
+    .controller('PlaylistController', function ($scope, $mdSidenav, $log, srvHomeCastSender) {
         $scope.close = function () {
             // Component lookup should always be available since we are not using `ng-if`
             $mdSidenav('playlist').close()

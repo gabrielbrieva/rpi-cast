@@ -8,7 +8,6 @@
         <link crossorigin="anonymous" href="bower_components/angular-material/angular-material.css" rel="stylesheet">
         <link crossorigin="anonymous" href="css/media_center.css" rel="stylesheet">
         
-        <script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></script>
         <script type="text/javascript" src="bower_components/angularjs/angular.js"></script>
         <script type="text/javascript" src="bower_components/angular-animate/angular-animate.js"></script>
         <script type="text/javascript" src="bower_components/angular-aria/angular-aria.js"></script>
@@ -24,77 +23,64 @@
         <script type="text/javascript" src="controllers/MediaCenterController.js"></script>
         <script type="text/javascript" src="controllers/PlaylistController.js"></script>
         <script type="text/javascript" src="controllers/ExplorerController.js"></script>
+        
+        
+        <script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></script>
     </head>
-    <body>
-        <div class="main-container" ng-app="MediaCenter" ng-controller="MediaCenterController" layout="column" ng-cloak>
+    <body ng-app="MediaCenter" ng-controller="MediaCenterController" layout-fill ng-cloak>
+        <div ng-controller="ExplorerController" layout="column" layout-fill>
             
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <img src="images/rpi_cast.svg" class="app-logo" />
+                    <h1 flex md-truncate class="app-title">RPI Cast</h1>
+                    <md-button class="md-icon-button" aria-label="Cast">
+                        <md-icon md-svg-icon="images/cast.svg" style="color: white;"></md-icon>
+                    </md-button>
+                    <md-button class="md-icon-button" aria-label="Playlist" ng-click="togglePlaylist()" hide-gt-md>
+                        <md-icon md-svg-icon="images/playlist_play.svg" style="color: white;"></md-icon>
+                    </md-button>
+                </div>
+                <div class="md-toolbar-tools">
+                    <ul class="breadcrumb">
+                        <li ng-repeat="p in parents"
+                            class="type-{{p.type}}" 
+                            ng-click="getFiles(p)"><md-button ng-if="p.name === '/'" class="md-icon-button" aria-label="Home"><md-icon md-svg-icon="images/home.svg" style="color: white;"></md-icon></md-button><span ng-if="p.name !== '/'">{{p.name}}</span><md-icon ng-if="($last && !current.isRoot) || !current.isRoot" md-svg-src="images/chevron_right.svg" class="s24"></md-icon></li>
+                        <li ng-if="current.isFolder && !current.isRoot" 
+                            class="current type-{{current.type}}"
+                            md-colors="{color: 'accent'}"><span>{{current.isRoot ? "root" : current.name}}</span></li>
+                    </ul>
+                </div>
+            </md-toolbar>
             
-            
-            <section layout="row" flex>
+            <div layout="row" flex>
 
-                <md-content flex>
-                    <md-toolbar>
-                        <h1 class="md-toolbar-tools">RPI Cast</h1>
-                    </md-toolbar>
-                
-                    <md-content flex layout-padding>
-
-                        <div layout="column" ng-controller="ExplorerController">
-
-                            <md-button ng-click="togglePlaylist()" class="md-primary" hide-gt-md>
-                                Toggle Playlist
-                            </md-button>
-
-                            <div id="controls">
-                                <input id="progress" type="range" min="0" max="100" step="1" ng-mouseup="homeCastSender.seekMedia(this.value);" ng-mousedown="homeCastSender.clearTimer();" />
-                                <input id="volumen" type="range" min="0" max="1" step="0.1" />
-                                <button ng-click="homeCastSender.LaunchApp()">Launch App</button>
-                                <!--<button onclick="homeCastSender.LoadMedia()">Load Media</button>-->
-                                <button ng-click="homeCastSender.Play()">Play</button>
-                                <button ng-click="homeCastSender.Pause()">Pause</button>
-                                <button ng-click="homeCastSender.Stop()">Stop</button>
-                                <!--<button ng-click="homeCastSender.UnloadMedia()">Unload Media</button>-->
-                                <button ng-click="homeCastSender.StopApp()">Stop App</button>
-                            </div>
-
-                            <div id="parents-container">
-                                <ul class="breadcrumb">
-                                    <li ng-repeat="p in parents" ng-class="{triangle: ($last && !current.isRoot) || !current.isRoot }" class="type-{{p.type}}" ng-click="getFiles(p)">{{p.name}}</li>
-                                    <li ng-if="current.isFolder && !current.isRoot" class="current type-{{current.type}}">{{current.name}}</li>
-                                </ul>
-                            </div>
-
-                            <div id="files-container">
-                                <ul class="files-links">
-                                    <li ng-repeat="f in files" class="fade type-{{f.type}}" ng-click="f.type === 'folder' ? getFiles(f) : loadFile(f)">{{f.name}}</li>
-                                </ul>
-                            </div>
-
-                            <div id="media-container">
-                                <!--<video id="media-video" class="video" controls autoplay preload="metadata" crossorigin="anonymous">
-                                    <source src="/media?filename={{name}}&parent={{parentPath}}" type='video/mp4' />
-                                    {{#subtitle}}
-                                    <track label="español" kind="subtitles" srclang="es" src="/media?filename={{subtitle}}&parent={{parentPath}}" default />
-                                    {{/subtitle}}
-                                </video>
-                                <video id="media-audio" class="audio" controls autoplay preload="metadata" crossorigin="anonymous">
-                                    <source src="/media?filename={{name}}&parent={{parentPath}}" type='audio/mpeg' />
-                                </video>
-                                <img id="media-image" class="image" src="/media?filename={{name}}&parent={{parentPath}}">-->
-                            </div>
-
-                        </div>
-
-                        <div flex></div>
-
-                    </md-content>
+                <md-content layout="column" flex>
+                    <div id="files-container">
+                        <ul class="files-links">
+                            <li ng-if="!current.isRoot" ng-click="getFiles(parents[parents.length - 1])" class="type-{{arents[parents.length - 1].type}}">..</li>
+                            <li ng-repeat="f in files" class="fade type-{{f.type}}" ng-click="f.type === 'folder' ? getFiles(f) : loadFile(f)">{{f.name}}</li>
+                        </ul>
+                    </div>
                 </md-content>
                 
-                <md-sidenav class="md-sidenav-right" md-component-id="playlist" md-is-locked-open="$mdMedia('gt-md')" md-whiteframe="4">
-                    <md-toolbar>
-                        <h1 class="md-toolbar-tools">Playlist</h1>
-                    </md-toolbar>
-                    <md-content layout-padding ng-controller="PlaylistController">
+                
+                <md-sidenav layout="column" class="md-sidenav-right" md-component-id="playlist" md-is-locked-open="$mdMedia('gt-md')" md-whiteframe="4">
+                    <md-content ng-controller="PlaylistController">
+
+                        <!--<div id="media-container">
+                            <video id="media-video" class="video" controls autoplay preload="metadata" crossorigin="anonymous">
+                                <source src="/media?filename={{name}}&parent={{parentPath}}" type='video/mp4' />
+                                {{#subtitle}}
+                                <track label="español" kind="subtitles" srclang="es" src="/media?filename={{subtitle}}&parent={{parentPath}}" default />
+                                {{/subtitle}}
+                            </video>
+                            <video id="media-audio" class="audio" controls autoplay preload="metadata" crossorigin="anonymous">
+                                <source src="/media?filename={{name}}&parent={{parentPath}}" type='audio/mpeg' />
+                            </video>
+                            <img id="media-image" class="image" src="/media?filename={{name}}&parent={{parentPath}}">
+                        </div>-->
+
                         <md-button ng-click="close()" class="md-primary" hide-gt-md>
                             Close Playlist
                         </md-button>
@@ -102,11 +88,36 @@
                             This sidenav is locked open on your device. To go back to the default behavior,
                             narrow your display.
                         </p>
+
+                        <md-slider-container>
+                            <span>Seek</span>
+                            <md-slider flex min="0" max="1000" id="seek-slider"></md-slider>
+                        </md-slider-container>
+
+                        <md-slider-container flex>
+                            <md-slider min="0" max="100" aria-label="volume" id="volume-slider" class="md-accent" md-vertical md-range></md-slider>
+                            <h5>Volume</h5>
+                        </md-slider-container>
+
+                        <div id="controls">
+                            <input id="progress" type="range" min="0" max="100" step="1" ng-mouseup="homeCastSender.seekMedia(this.value);" ng-mousedown="homeCastSender.clearTimer();" />
+                            <input id="volumen" type="range" min="0" max="1" step="0.1" />
+                            <button ng-click="homeCastSender.LaunchApp()">Launch App</button>
+                            <!--<button onclick="homeCastSender.LoadMedia()">Load Media</button>-->
+                            <button ng-click="homeCastSender.Play()">Play</button>
+                            <button ng-click="homeCastSender.Pause()">Pause</button>
+                            <button ng-click="homeCastSender.Stop()">Stop</button>
+                            <!--<button ng-click="homeCastSender.UnloadMedia()">Unload Media</button>-->
+                            <button ng-click="homeCastSender.StopApp()">Stop App</button>
+                        </div>
+
                     </md-content>
 
                 </md-sidenav>
-            </section>
+                
+            </div>
             
         </div>
+        
     </body>
 </html>
