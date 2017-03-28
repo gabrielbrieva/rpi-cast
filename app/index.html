@@ -7,25 +7,6 @@
         
         <link crossorigin="anonymous" href="bower_components/angular-material/angular-material.css" rel="stylesheet">
         <link crossorigin="anonymous" href="css/media_center.css" rel="stylesheet">
-        
-        <script type="text/javascript" src="bower_components/angularjs/angular.js"></script>
-        <script type="text/javascript" src="bower_components/angular-animate/angular-animate.js"></script>
-        <script type="text/javascript" src="bower_components/angular-aria/angular-aria.js"></script>
-        <script type="text/javascript" src="bower_components/angular-messages/angular-messages.js"></script>
-        <script type="text/javascript" src="bower_components/angular-material/angular-material.js"></script>
-        
-        <script type="text/javascript">
-            var APP_ID = "671A6CC5";
-        </script>
-        
-        <script type="text/javascript" src="media_center_app.js"></script>
-        <script type="text/javascript" src="services/HomeCastSender.js"></script>
-        <script type="text/javascript" src="controllers/MediaCenterController.js"></script>
-        <script type="text/javascript" src="controllers/PlaylistController.js"></script>
-        <script type="text/javascript" src="controllers/ExplorerController.js"></script>
-        
-        
-        <script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></script>
     </head>
     <body ng-app="MediaCenter" ng-controller="MediaCenterController" layout-fill ng-cloak>
         <div ng-controller="ExplorerController" layout="column" layout-fill>
@@ -34,9 +15,7 @@
                 <div class="md-toolbar-tools">
                     <img src="images/rpi_cast.svg" class="app-logo" />
                     <h1 flex md-truncate class="app-title">RPI Cast</h1>
-                    <md-button class="md-icon-button" aria-label="Cast">
-                        <md-icon md-svg-icon="images/cast.svg" style="color: white;"></md-icon>
-                    </md-button>
+                    <button is="google-cast-button" class="castbutton md-button md-icon-button" ng-click="console.log('asd');"></button>
                     <md-button class="md-icon-button" aria-label="Playlist" ng-click="togglePlaylist()" hide-gt-md>
                         <md-icon md-svg-icon="images/playlist_play.svg" style="color: white;"></md-icon>
                     </md-button>
@@ -67,7 +46,10 @@
                 
                 <md-sidenav layout="column" class="md-sidenav-right" md-component-id="playlist" md-is-locked-open="$mdMedia('gt-md')" md-whiteframe="4">
                     <md-content ng-controller="PlaylistController">
-
+                        <video id="media-video" class="video" controls autoplay preload="metadata" crossorigin="anonymous">
+                            <source src="" type='video/mp4' />
+                            <!--<track label="español" kind="subtitles" srclang="es" src="/media?filename={{subtitle}}&parent={{parentPath}}" default />-->
+                        </video>
                         <!--<div id="media-container">
                             <video id="media-video" class="video" controls autoplay preload="metadata" crossorigin="anonymous">
                                 <source src="/media?filename={{name}}&parent={{parentPath}}" type='video/mp4' />
@@ -102,13 +84,13 @@
                         <div id="controls">
                             <input id="progress" type="range" min="0" max="100" step="1" ng-mouseup="homeCastSender.seekMedia(this.value);" ng-mousedown="homeCastSender.clearTimer();" />
                             <input id="volumen" type="range" min="0" max="1" step="0.1" />
-                            <button ng-click="homeCastSender.LaunchApp()">Launch App</button>
-                            <!--<button onclick="homeCastSender.LoadMedia()">Load Media</button>-->
-                            <button ng-click="homeCastSender.Play()">Play</button>
-                            <button ng-click="homeCastSender.Pause()">Pause</button>
-                            <button ng-click="homeCastSender.Stop()">Stop</button>
-                            <!--<button ng-click="homeCastSender.UnloadMedia()">Unload Media</button>-->
-                            <button ng-click="homeCastSender.StopApp()">Stop App</button>
+                            <!--<button ng-click="homeCastSender.LaunchApp()">Launch App</button>
+                            <button onclick="homeCastSender.LoadMedia()">Load Media</button>-->
+                            <button ng-click="play()">Play</button>
+                            <button ng-click="pause()">Pause</button>
+                            <!--<button ng-click="stop()">Stop</button>-->
+                            <!--<button ng-click="homeCastSender.UnloadMedia()">Unload Media</button>
+                            <button ng-click="homeCastSender.StopApp()">Stop App</button>-->
                         </div>
 
                     </md-content>
@@ -118,6 +100,38 @@
             </div>
             
         </div>
+        
+        <script type="text/javascript" src="bower_components/angularjs/angular.js"></script>
+        <script type="text/javascript" src="bower_components/angular-animate/angular-animate.js"></script>
+        <script type="text/javascript" src="bower_components/angular-aria/angular-aria.js"></script>
+        <script type="text/javascript" src="bower_components/angular-messages/angular-messages.js"></script>
+        <script type="text/javascript" src="bower_components/angular-material/angular-material.js"></script>
+        
+        <script type="text/javascript" src="cast/home_cast.js"></script>
+        <script type="text/javascript">
+            
+            var config = {
+                appId: "671A6CC5",
+                namespace: "urn:x-cast:cl.tuxan.homecast"
+            };
+            
+            window.homeCast = new HomeCastSender(config);
+            
+            window['__onGCastApiAvailable'] = function (isAvailable) {
+                if (isAvailable) {
+                    homeCast.Init();
+                }
+            };
+        </script>
+        
+        <script type="text/javascript" src="media_center_app.js"></script>
+        <script type="text/javascript" src="services/HomeCastSender.js"></script>
+        <script type="text/javascript" src="controllers/MediaCenterController.js"></script>
+        <script type="text/javascript" src="controllers/PlaylistController.js"></script>
+        <script type="text/javascript" src="controllers/ExplorerController.js"></script>
+        
+        
+        <script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
         
     </body>
 </html>

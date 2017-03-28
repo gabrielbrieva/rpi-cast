@@ -80,7 +80,6 @@ angular.module('MediaCenter')
             }, 200);
         }
         
-        //srvHomeCastSender.Init();
         $scope.homeCastSender = srvHomeCastSender;
     });
 

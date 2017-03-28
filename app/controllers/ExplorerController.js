@@ -34,12 +34,24 @@ angular.module('MediaCenter')
         
         $scope.loadFile = function (file) {
             if (file.extension && videoExtensions.indexOf(file.extension) !== -1) {
-                srvHomeCastSender.CastFile(file, null/*getVideo*/);
+                srvHomeCastSender.playerHandler.load(file/*, null*/);
             } else if (file.extension && audioExtensions.indexOf(file.extension) !== -1) {
                 //CastFile(file, getAudio);
             } else if (file.extension && imageExtensions.indexOf(file.extension) !== -1) {
                 //CastFile(file, getImage);
             }
+        };
+        
+        $scope.play = function () {
+            srvHomeCastSender.playerHandler.play();
+        };
+        
+        $scope.pause = function () {
+            srvHomeCastSender.playerHandler.pause();
+        };
+        
+        $scope.stop = function () {
+            srvHomeCastSender.playerHandler.stop();
         };
         
         $scope.parents = null;
